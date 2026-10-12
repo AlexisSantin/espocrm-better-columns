@@ -1,6 +1,10 @@
 import ColumnStore from 'better-columns:utils/column-store';
-import {applyOrderToLayout} from
-    'better-columns:utils/column-state';
+import {
+    applyOrderToLayout,
+    buildDisplayOrder,
+    canHideLayoutItem,
+    togglePinnedColumn,
+} from 'better-columns:utils/column-state';
 import {getFieldMinimumWidth} from 'better-columns:utils/field-sizing';
 import isBetterColumnsEnabledForEntity from
     'better-columns:utils/configuration';
@@ -170,7 +174,8 @@ export default class ListColumnManager {
                 !table.classList.contains('better-columns-managed-table') ||
                 !table.querySelector(':scope > colgroup.better-columns-colgroup') ||
                 headers.some(header =>
-                    !header.querySelector(':scope > .better-columns-resizer')
+                    !header.querySelector(':scope > .better-columns-resizer') ||
+                    !header.querySelector(':scope > .better-columns-column-menu-button')
                 ) ||
                 rows.some(row =>
                     !row.querySelector(':scope > .better-columns-filler-cell')
@@ -203,6 +208,7 @@ export default class ListColumnManager {
 
         this.hideNativeResizeSetting();
         this.ensureResetAction();
+        this.ensureSettingsToggle();
 
         if (!this.settingsMenuOpen || !this.settingsElement) {
             return;
@@ -261,6 +267,22 @@ export default class ListColumnManager {
 
         item.append(action);
         menu.append(divider, item);
+    }
+
+    ensureSettingsToggle() {
+        const toggle = this.settingsElement?.querySelector('.dropdown-toggle');
+
+        if (!toggle || toggle.classList.contains('better-columns-settings-toggle')) {
+            return;
+        }
+
+        const label = this.view.translate('Columns', 'labels', 'BetterColumns');
+
+        toggle.classList.remove('btn-text');
+        toggle.classList.add('btn', 'btn-default', 'better-columns-settings-toggle');
+        toggle.title = label;
+        toggle.setAttribute('aria-label', label);
+        toggle.innerHTML = '<span class="fas fa-table-columns"></span>';
     }
 
     escapeHtml(value) {
@@ -382,19 +404,91 @@ export default class ListColumnManager {
         this.store.save();
     }
 
+    getDisplayOrder() {
+        if (!this.state) {
+            return [];
+        }
+
+        return buildDisplayOrder(this.state.order, this.state.pinned);
+    }
+
+    isPinned(name) {
+        return Boolean(this.state?.pinned.includes(name));
+    }
+
+    async togglePin(name) {
+        if (!this.state || !this.state.order.includes(name)) {
+            return;
+        }
+
+        this.state.pinned = togglePinnedColumn(this.state.pinned, name);
+        this.store.save();
+        await this.refresh();
+    }
+
+    canHideColumn(name) {
+        const item = this.administratorLayout?.find(
+            layoutItem => layoutItem.name === name
+        );
+
+        return canHideLayoutItem(item);
+    }
+
+    /**
+     * Store the hidden state in EspoCRM's own map, so the native Columns
+     * menu and the list rendering stay in sync with the table.
+     *
+     * @param {string} name
+     * @param {boolean} hidden
+     */
+    async setColumnHidden(name, hidden) {
+        const helper = this.view._listSettingsHelper;
+
+        if (!helper || !this.state || !this.canHideColumn(name)) {
+            return;
+        }
+
+        helper.storeHiddenColumnMap({
+            ...helper.getHiddenColumnMap(),
+            [name]: hidden,
+        });
+
+        void this.view.getView('settings')?.reRender();
+
+        await this.refresh();
+    }
+
     async moveColumn(name, beforeName = null) {
         if (!this.state || name === beforeName) {
             return;
         }
 
-        const order = this.state.order.filter(item => item !== name);
-        const index = beforeName ? order.indexOf(beforeName) : -1;
+        const pinned = this.isPinned(name);
 
-        index === -1 ?
-            order.push(name) :
-            order.splice(index, 0, name);
+        if (beforeName && this.isPinned(beforeName) !== pinned) {
+            return;
+        }
 
-        this.state.order = order;
+        if (pinned) {
+            const pinnedOrder = this.state.pinned.filter(item => item !== name);
+            const pinnedIndex = beforeName ? pinnedOrder.indexOf(beforeName) : -1;
+
+            pinnedIndex === -1 ?
+                pinnedOrder.push(name) :
+                pinnedOrder.splice(pinnedIndex, 0, name);
+
+            this.state.pinned = pinnedOrder;
+        } else {
+            const order = this.state.order.filter(item => item !== name);
+            const index = beforeName ? order.indexOf(beforeName) : -1;
+
+            index === -1 ?
+                order.push(name) :
+                order.splice(index, 0, name);
+
+            this.state.order = order;
+        }
+
         this.store.save();
         await this.refresh();
     }
@@ -406,7 +500,7 @@ export default class ListColumnManager {
 
         this.view.listLayout = applyOrderToLayout(
             this.administratorLayout,
-            this.state.order
+            this.getDisplayOrder()
         );
         this.view._internalLayout = null;
 

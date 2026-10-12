@@ -1,18 +1,22 @@
 {
     "labels": {
-        "Columns": "Columns",
         "Close": "Close",
+        "Column Options": "Column options",
+        "Columns": "Columns",
         "Hidden Columns": "Hidden columns",
+        "Hide Column": "Hide column",
         "Move Column": "Move column",
         "No Columns": "No columns",
+        "Pin Column": "Pin column",
         "Reset All": "Reset all",
         "Reset Column Width": "Reset column width",
-        "Reset Order and Widths": "Reset order and widths",
         "Reset Order": "Reset order",
+        "Reset Order and Widths": "Reset order, widths and pins",
         "Resize Column": "Resize column",
         "Search Columns": "Search columns",
         "Show All": "Show all",
         "Toggle Column": "Toggle column",
+        "Unpin Column": "Unpin column",
         "Visible Columns": "Visible columns"
     }
 }

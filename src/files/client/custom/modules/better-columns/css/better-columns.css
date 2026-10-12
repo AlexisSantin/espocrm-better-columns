@@ -1,21 +1,15 @@
 .better-columns-list {
     overflow-x: auto;
     overflow-y: visible;
-    scrollbar-color:
-        color-mix(in srgb, var(--scroll-thumb-bg) 15%, transparent)
-        transparent;
+    scrollbar-color: var(--scroll-thumb-bg) var(--scroll-bg);
 }
 
 .better-columns-list::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--scroll-bg);
 }
 
 .better-columns-list::-webkit-scrollbar-thumb {
-    background-color: color-mix(
-        in srgb,
-        var(--scroll-thumb-bg) 15%,
-        transparent
-    );
+    background-color: var(--scroll-thumb-bg);
 }
 
 .better-columns-managed-table {
@@ -157,4 +151,176 @@ body.better-columns-is-reordering * {
     .better-columns-managed-table .better-columns-resizer {
         display: none !important;
     }
+}
+
+.better-columns-managed-table > thead > tr > th {
+    padding-inline-end: 32px;
+}
+
+.better-columns-managed-table > thead > tr > th > .better-columns-column-menu-button {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    color: var(--gray-light);
+    cursor: pointer;
+    display: flex;
+    height: 20px;
+    inset-inline-end: 13px;
+    justify-content: center;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 100ms ease, color 100ms ease, background-color 100ms ease;
+    width: 18px;
+    z-index: 5;
+}
+
+.better-columns-managed-table > thead > tr > th:hover > .better-columns-column-menu-button,
+.better-columns-managed-table > thead > tr > th:focus-within > .better-columns-column-menu-button,
+.better-columns-managed-table > thead > tr > th > .better-columns-column-menu-button[aria-expanded="true"] {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.better-columns-managed-table > thead > tr > th > .better-columns-column-menu-button:hover,
+.better-columns-managed-table > thead > tr > th > .better-columns-column-menu-button[aria-expanded="true"] {
+    background-color: var(--gray-lighter, rgba(0, 0, 0, 0.05));
+    color: var(--gray-dark, #333);
+}
+
+.better-columns-managed-table > thead > tr > th > .better-columns-column-menu-button:focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 1px;
+}
+
+.better-columns-column-menu {
+    display: block;
+    min-width: 160px;
+    position: fixed;
+    z-index: 1060;
+}
+
+.better-columns-column-menu > li > a {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+.better-columns-column-menu > li > a .item-icon {
+    width: 13px;
+}
+
+[dir="rtl"] .better-columns-column-menu > li > a {
+    flex-direction: row-reverse;
+}
+
+/* Browsers do not paint box-shadow on cells in the collapsed border model, so the managed
+   table uses the separate model. Each grid line is drawn once, by the cell that owns it. */
+.better-columns-managed-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.better-columns-managed-table > thead > tr > th {
+    border-bottom: 0 none;
+}
+
+.better-columns-managed-table > thead > tr > th + th,
+.better-columns-managed-table > thead > tr > th:first-child {
+    border-inline-start: 0 none;
+}
+
+.better-columns-managed-table > thead > tr > th:last-child {
+    border-inline-end: 0 none;
+}
+
+.better-columns-managed-table > tbody > tr > .better-columns-pinned,
+.better-columns-managed-table > thead > tr > .better-columns-pinned {
+    background-color: var(--table-bg, #fff) !important;
+}
+
+/* Stacked unblurred box-shadow layers instead of a blurred one: a blur fades at the
+   top and bottom of each cell, which leaves gaps between rows. The shadow only shows
+   once the table is scrolled horizontally (see updateScrollShadow). */
+.better-columns-managed-table.better-columns-scrolled > tbody > tr > .better-columns-pinned-edge,
+.better-columns-managed-table.better-columns-scrolled > thead > tr > .better-columns-pinned-edge {
+    box-shadow:
+        2px 0 0 0 rgba(0, 0, 0, 0.02),
+        3px 0 0 0 rgba(0, 0, 0, 0.02),
+        4px 0 0 0 rgba(0, 0, 0, 0.02),
+        5px 0 0 0 rgba(0, 0, 0, 0.02),
+        6px 0 0 0 rgba(0, 0, 0, 0.02),
+        7px 0 0 0 rgba(0, 0, 0, 0.02),
+        8px 0 0 0 rgba(0, 0, 0, 0.02),
+        9px 0 0 0 rgba(0, 0, 0, 0.02),
+        10px 0 0 0 rgba(0, 0, 0, 0.02),
+        11px 0 0 0 rgba(0, 0, 0, 0.02);
+}
+
+[dir="rtl"] .better-columns-managed-table.better-columns-scrolled > tbody > tr > .better-columns-pinned-edge,
+[dir="rtl"] .better-columns-managed-table.better-columns-scrolled > thead > tr > .better-columns-pinned-edge {
+    box-shadow:
+        -2px 0 0 0 rgba(0, 0, 0, 0.02),
+        -3px 0 0 0 rgba(0, 0, 0, 0.02),
+        -4px 0 0 0 rgba(0, 0, 0, 0.02),
+        -5px 0 0 0 rgba(0, 0, 0, 0.02),
+        -6px 0 0 0 rgba(0, 0, 0, 0.02),
+        -7px 0 0 0 rgba(0, 0, 0, 0.02),
+        -8px 0 0 0 rgba(0, 0, 0, 0.02),
+        -9px 0 0 0 rgba(0, 0, 0, 0.02),
+        -10px 0 0 0 rgba(0, 0, 0, 0.02),
+        -11px 0 0 0 rgba(0, 0, 0, 0.02);
+}
+
+.settings-container .better-columns-settings-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border: 0 none;
+    background: transparent;
+    color: #1f2d3d;
+    box-shadow: none;
+}
+
+.settings-container .btn-group:not(.open) > .better-columns-settings-toggle,
+.settings-container .btn-group:not(.open) > .better-columns-settings-toggle:hover,
+.settings-container .btn-group:not(.open) > .better-columns-settings-toggle:focus,
+.settings-container .btn-group:not(.open) > .better-columns-settings-toggle:active {
+    background: transparent;
+    border: 0 none;
+    box-shadow: none;
+    color: #1f2d3d;
+}
+
+.settings-container .btn-group.open > .better-columns-settings-toggle,
+.settings-container .btn-group.open > .better-columns-settings-toggle:hover,
+.settings-container .btn-group.open > .better-columns-settings-toggle:focus {
+    background-color: transparent;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06));
+    border: 0 none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.settings-container .better-columns-settings-toggle .fas {
+    font-size: 14px;
+    color: #1f2d3d;
+}
+
+.settings-container [data-action="toggleColumn"] .check-icon {
+    display: inline-block !important;
+}
+
+.settings-container [data-action="toggleColumn"] .check-icon::before {
+    content: "\f06e";
+}
+
+.settings-container [data-action="toggleColumn"] .check-icon.hidden::before {
+    content: "\f070";
 }

@@ -1,18 +1,22 @@
 {
     "labels": {
-        "Columns": "Colonnes",
         "Close": "Fermer",
+        "Column Options": "Options de la colonne",
+        "Columns": "Colonnes",
         "Hidden Columns": "Colonnes masquées",
+        "Hide Column": "Masquer la colonne",
         "Move Column": "Déplacer la colonne",
         "No Columns": "Aucune colonne",
+        "Pin Column": "Épingler la colonne",
         "Reset All": "Tout réinitialiser",
         "Reset Column Width": "Réinitialiser la largeur",
-        "Reset Order and Widths": "Réinitialiser l’ordre et les largeurs",
         "Reset Order": "Réinitialiser l’ordre",
+        "Reset Order and Widths": "Réinitialiser l’ordre, les largeurs et les épingles",
         "Resize Column": "Redimensionner la colonne",
         "Search Columns": "Rechercher une colonne",
         "Show All": "Tout afficher",
         "Toggle Column": "Afficher ou masquer la colonne",
+        "Unpin Column": "Désépingler la colonne",
         "Visible Columns": "Colonnes visibles"
     }
 }

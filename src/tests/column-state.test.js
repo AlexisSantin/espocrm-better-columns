@@ -3,9 +3,12 @@ import test from 'node:test';
 
 import {
     applyOrderToLayout,
+    buildDisplayOrder,
+    canHideLayoutItem,
     getEligibleLayoutItems,
     reconcileOrder,
     reconcileState,
+    togglePinnedColumn,
 } from '../files/client/custom/modules/better-columns/src/utils/column-state.js';
 import {
     combineContentWidths,
@@ -116,7 +119,53 @@ test('version one width and order preferences are migrated', () => {
 
     assert.deepEqual(state.order, ['name', 'phoneNumber']);
     assert.deepEqual(state.widths, {name: 180});
-    assert.equal(state.version, 2);
+    assert.deepEqual(state.pinned, []);
+    assert.equal(state.version, 3);
+});
+
+test('pinned preferences are filtered and deduplicated', () => {
+    const state = reconcileState(
+        {
+            version: 3,
+            order: ['name', 'status', 'removed'],
+            pinned: ['status', 'removed', 'status', 'name', 'assignedUser', 'phoneNumber'],
+            widths: {},
+        },
+        [
+            {name: 'name', link: true},
+            {name: 'status'},
+            {name: 'assignedUser'},
+            {name: 'phoneNumber'},
+        ]
+    );
+
+    assert.deepEqual(state.pinned, ['status', 'name', 'assignedUser', 'phoneNumber']);
+});
+
+test('display order places pinned columns first in pin order', () => {
+    assert.deepEqual(
+        buildDisplayOrder(['name', 'status', 'email', 'phone'], ['email', 'phone']),
+        ['email', 'phone', 'name', 'status']
+    );
+    assert.deepEqual(
+        buildDisplayOrder(['name', 'status'], []),
+        ['name', 'status']
+    );
+});
+
+test('pinning has no count limit and unpinning keeps other pins', () => {
+    let pinned = [];
+
+    pinned = togglePinnedColumn(pinned, 'name');
+    pinned = togglePinnedColumn(pinned, 'status');
+    pinned = togglePinnedColumn(pinned, 'email');
+    assert.deepEqual(pinned, ['name', 'status', 'email']);
+
+    pinned = togglePinnedColumn(pinned, 'phone');
+    assert.deepEqual(pinned, ['name', 'status', 'email', 'phone']);
+
+    pinned = togglePinnedColumn(pinned, 'status');
+    assert.deepEqual(pinned, ['name', 'email', 'phone']);
 });
 
 test('applying order preserves native visibility data', () => {
@@ -336,4 +385,13 @@ test('resize boundaries take priority on both sides of separators', () => {
         findHeaderAtResizeBoundary([status, pipeline], 133, true),
         null
     );
+});
+
+test('hideable columns match the Columns menu rules', () => {
+    assert.equal(canHideLayoutItem({name: 'status'}), true);
+    assert.equal(canHideLayoutItem({name: 'name', link: true}), false);
+    assert.equal(canHideLayoutItem({name: 'internal', noLabel: true}), false);
+    assert.equal(canHideLayoutItem({name: 'forbidden', customLabel: ''}), false);
+    assert.equal(canHideLayoutItem({}), false);
+    assert.equal(canHideLayoutItem(undefined), false);
 });

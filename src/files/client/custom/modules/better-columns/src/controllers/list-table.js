@@ -27,20 +27,32 @@ export default class ListTableController {
         this.colMap = new Map();
         this.staticWidth = 0;
         this.activeInteraction = null;
+        this.columnMenu = null;
 
         this.onPointerDownBind = this.onPointerDown.bind(this);
         this.onDoubleClickBind = this.onDoubleClick.bind(this);
+        this.onTableClickBind = this.onTableClick.bind(this);
         this.onTablePointerMoveBind = this.onTablePointerMove.bind(this);
         this.onTablePointerLeaveBind = this.clearResizeHover.bind(this);
         this.onPointerMoveBind = this.onPointerMove.bind(this);
         this.onPointerUpBind = this.onPointerUp.bind(this);
         this.onPointerCancelBind = this.onPointerCancel.bind(this);
         this.onWindowResizeBind = this.layoutTable.bind(this);
+        this.onColumnMenuClickBind = this.onColumnMenuClick.bind(this);
+        this.onColumnMenuKeydownBind = this.onColumnMenuKeydown.bind(this);
+        this.onDocumentPointerDownBind = this.onDocumentPointerDown.bind(this);
+        this.onDocumentKeydownBind = this.onDocumentKeydown.bind(this);
+        this.closeColumnMenuBind = this.closeColumnMenu.bind(this);
+        this.updateScrollShadowBind = this.updateScrollShadow.bind(this);
     }
 
     attach() {
         const table = this.manager.view.element
             .querySelector('.list > table');
+
+        if (this.columnMenu && !this.columnMenu.button.isConnected) {
+            this.closeColumnMenu();
+        }
 
         if (!table) {
             this.detachTable();
@@ -52,8 +64,14 @@ export default class ListTableController {
             this.detachTable();
             this.table = table;
             this.listElement = table.closest('.list');
+            this.listElement?.addEventListener(
+                'scroll',
+                this.updateScrollShadowBind,
+                { passive: true }
+            );
             table.addEventListener('pointerdown', this.onPointerDownBind);
             table.addEventListener('dblclick', this.onDoubleClickBind);
+            table.addEventListener('click', this.onTableClickBind);
             table.addEventListener(
                 'pointermove',
                 this.onTablePointerMoveBind
@@ -100,7 +118,7 @@ export default class ListTableController {
     }
 
     reorderRowCells(row, selector) {
-        const order = this.manager.getState()?.order || [];
+        const order = this.manager.getDisplayOrder();
 
         reorderNamedCells(row, selector, order);
     }
@@ -119,12 +137,240 @@ export default class ListTableController {
                 'column-resizer-right',
                 'better-columns-resizer'
             );
-            resizer.title = this.manager.view.translate(
-                'Resize Column',
-                'labels',
-                'BetterColumns'
-            );
+            resizer.title = this.translate('Resize Column');
+
+            this.ensureColumnMenuButton(header);
         });
+    }
+
+    ensureColumnMenuButton(header) {
+        if (header.querySelector(':scope > .better-columns-column-menu-button')) {
+            return;
+        }
+
+        const label = this.translate('Column Options');
+        const button = document.createElement('button');
+
+        button.type = 'button';
+        button.className = 'better-columns-column-menu-button';
+        button.title = label;
+        button.setAttribute('aria-label', label);
+        button.setAttribute('aria-haspopup', 'menu');
+        button.setAttribute('aria-expanded', 'false');
+        button.innerHTML = '<span class="fas fa-ellipsis-v"></span>';
+        header.append(button);
+    }
+
+    toggleColumnMenu(button, name) {
+        if (this.columnMenu?.button === button) {
+            this.closeColumnMenu();
+
+            return;
+        }
+
+        this.openColumnMenu(button, name);
+    }
+
+    openColumnMenu(button, name) {
+        this.closeColumnMenu();
+
+        const element = document.createElement('ul');
+
+        element.className = 'dropdown-menu better-columns-column-menu';
+        element.setAttribute('role', 'menu');
+        element.append(this.createPinMenuItem(name));
+
+        if (this.manager.canHideColumn(name)) {
+            element.append(...this.createHideMenuItems());
+        }
+
+        document.body.append(element);
+
+        this.columnMenu = {button, element, name};
+        button.setAttribute('aria-expanded', 'true');
+        this.positionColumnMenu(button, element);
+        element.querySelector('[role="menuitem"]:not([aria-disabled="true"])')
+            ?.focus();
+
+        element.addEventListener('click', this.onColumnMenuClickBind);
+        element.addEventListener('keydown', this.onColumnMenuKeydownBind);
+        document.addEventListener(
+            'pointerdown',
+            this.onDocumentPointerDownBind,
+            true
+        );
+        document.addEventListener('keydown', this.onDocumentKeydownBind, true);
+        window.addEventListener('resize', this.closeColumnMenuBind);
+        window.addEventListener('scroll', this.closeColumnMenuBind, true);
+    }
+
+    createPinMenuItem(name) {
+        const pinned = this.manager.isPinned(name);
+        const label = this.translate(pinned ? 'Unpin Column' : 'Pin Column');
+        const item = document.createElement('li');
+        const action = document.createElement('a');
+
+        action.role = 'menuitem';
+        action.tabIndex = -1;
+        action.dataset.action = 'betterColumnsTogglePin';
+        action.setAttribute('aria-disabled', 'false');
+        action.innerHTML = [
+            '<span class="item-icon fas fa-thumbtack"></span>',
+            `<span class="item-text"></span>`,
+        ].join(' ');
+        action.querySelector('.item-text').textContent = label;
+        item.append(action);
+
+        return item;
+    }
+
+    createHideMenuItems() {
+        const divider = document.createElement('li');
+        const item = document.createElement('li');
+        const action = document.createElement('a');
+
+        divider.className = 'divider';
+        action.role = 'menuitem';
+        action.tabIndex = -1;
+        action.dataset.action = 'betterColumnsHideColumn';
+        action.setAttribute('aria-disabled', 'false');
+        action.innerHTML = [
+            '<span class="item-icon fas fa-eye-slash"></span>',
+            '<span class="item-text"></span>',
+        ].join(' ');
+        action.querySelector('.item-text').textContent =
+            this.translate('Hide Column');
+        item.append(action);
+
+        return [divider, item];
+    }
+
+    positionColumnMenu(button, element) {
+        const rect = button.getBoundingClientRect();
+        const width = element.offsetWidth;
+        const isRtl = document.documentElement.dir === 'rtl';
+        const preferred = isRtl ? rect.left : rect.right - width;
+        const left = Math.min(
+            Math.max(8, preferred),
+            window.innerWidth - width - 8
+        );
+
+        element.style.left = `${Math.round(left)}px`;
+        element.style.top = `${Math.round(rect.bottom + 4)}px`;
+    }
+
+    closeColumnMenu() {
+        if (!this.columnMenu) {
+            return;
+        }
+
+        const {button, element} = this.columnMenu;
+
+        this.columnMenu = null;
+        element.remove();
+        button.setAttribute('aria-expanded', 'false');
+        document.removeEventListener(
+            'pointerdown',
+            this.onDocumentPointerDownBind,
+            true
+        );
+        document.removeEventListener(
+            'keydown',
+            this.onDocumentKeydownBind,
+            true
+        );
+        window.removeEventListener('resize', this.closeColumnMenuBind);
+        window.removeEventListener('scroll', this.closeColumnMenuBind, true);
+    }
+
+    onColumnMenuClick(event) {
+        const action = event.target.closest('[role="menuitem"]');
+
+        if (!action || action.getAttribute('aria-disabled') === 'true') {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const name = this.columnMenu?.name;
+        const actionName = action.dataset.action;
+
+        this.closeColumnMenu();
+
+        if (!name) {
+            return;
+        }
+
+        if (actionName === 'betterColumnsHideColumn') {
+            void this.manager.setColumnHidden(name, true);
+
+            return;
+        }
+
+        void this.manager.togglePin(name);
+    }
+
+    onColumnMenuKeydown(event) {
+        const items = [
+            ...(this.columnMenu?.element.querySelectorAll(
+                '[role="menuitem"]:not([aria-disabled="true"])'
+            ) || []),
+        ];
+        const index = items.indexOf(document.activeElement);
+
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            const step = event.key === 'ArrowDown' ? 1 : -1;
+
+            items[(index + step + items.length) % items.length]?.focus();
+
+            return;
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            document.activeElement?.click();
+        }
+    }
+
+    onDocumentPointerDown(event) {
+        if (!this.columnMenu) {
+            return;
+        }
+
+        const {button, element} = this.columnMenu;
+
+        if (element.contains(event.target) || button.contains(event.target)) {
+            return;
+        }
+
+        this.closeColumnMenu();
+    }
+
+    onDocumentKeydown(event) {
+        if (!this.columnMenu) {
+            return;
+        }
+
+        if (event.key === 'Escape') {
+            const button = this.columnMenu.button;
+
+            event.preventDefault();
+            event.stopPropagation();
+            this.closeColumnMenu();
+            button.focus();
+
+            return;
+        }
+
+        if (event.key === 'Tab') {
+            this.closeColumnMenu();
+        }
+    }
+
+    translate(key) {
+        return this.manager.view.translate(key, 'labels', 'BetterColumns');
     }
 
     captureInitialWidths() {
@@ -293,6 +539,93 @@ export default class ListTableController {
         this.table.style.width = `${sizing.tableWidth}px`;
         this.table.style.minWidth = '';
         this.table.style.tableLayout = 'fixed';
+        this.applyPinnedLayout();
+    }
+
+    applyPinnedLayout() {
+        this.clearPinnedLayout();
+
+        const headerRow = this.table?.querySelector(':scope > thead > tr');
+        const pinned = (this.manager.getState()?.pinned || []).filter(name =>
+            headerRow?.querySelector(`:scope > th[data-name="${this.escapeName(name)}"]`)
+        );
+
+        if (!headerRow || !pinned.length) {
+            return;
+        }
+
+        const side = document.documentElement.dir === 'rtl' ?
+            'right' :
+            'left';
+        const leading = [];
+        const checkbox = headerRow.querySelector(':scope > th.checkbox-cell[data-name]');
+
+        if (checkbox) {
+            leading.push(checkbox.dataset.name);
+        }
+
+        leading.push(...pinned);
+
+        let offset = 0;
+
+        // Hidden pinned columns have no header cell, so the edge is the last rendered one.
+        const rendered = leading
+            .map(name => ({
+                name,
+                header: headerRow.querySelector(
+                    `:scope > th[data-name="${this.escapeName(name)}"]`
+                ),
+            }))
+            .filter(item => item.header);
+
+        rendered.forEach(({ name, header }, index) => {
+            const selector = `[data-name="${this.escapeName(name)}"]`;
+            const isEdge = index === rendered.length - 1;
+            const cells = [
+                header,
+                ...this.table.querySelectorAll(
+                    `:scope > tbody > tr.list-row > td${selector}`
+                ),
+            ];
+
+            cells.forEach(cell => {
+                cell.classList.add('better-columns-pinned');
+                cell.classList.toggle('better-columns-pinned-edge', isEdge);
+                cell.style.position = 'sticky';
+                cell.style[side] = `${offset}px`;
+                cell.style.zIndex = cell === header ? '3' : '2';
+            });
+
+            offset += header.getBoundingClientRect().width;
+        });
+
+        this.updateScrollShadow();
+    }
+
+    updateScrollShadow() {
+        const scrolled = Math.abs(this.listElement?.scrollLeft || 0) > 0;
+
+        this.table?.classList.toggle('better-columns-scrolled', scrolled);
+    }
+
+    clearPinnedLayout() {
+        this.table?.querySelectorAll('.better-columns-pinned')
+            .forEach(cell => {
+                cell.classList.remove(
+                    'better-columns-pinned',
+                    'better-columns-pinned-edge'
+                );
+                cell.style.position = '';
+                cell.style.left = '';
+                cell.style.right = '';
+                cell.style.zIndex = '';
+            });
+    }
+
+    escapeName(name) {
+        return window.CSS?.escape ?
+            window.CSS.escape(name) :
+            name.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
     }
 
     onPointerDown(event) {
@@ -421,10 +754,14 @@ export default class ListTableController {
         document.body.classList.add('better-columns-is-reordering');
         this.createDragPreview(this.activeInteraction.source);
 
-        const headers = this.getFieldHeaders()
+        const draggedName = this.activeInteraction.name;
+        const draggingPinned = this.manager.isPinned(draggedName);
+        const groupHeaders = this.getFieldHeaders()
             .filter(header =>
-                header.dataset.name !== this.activeInteraction.name
+                this.manager.isPinned(header.dataset.name) === draggingPinned
             );
+        const headers = groupHeaders
+            .filter(header => header.dataset.name !== draggedName);
         const target = headers.find(header => {
             const rect = header.getBoundingClientRect();
 
@@ -435,7 +772,7 @@ export default class ListTableController {
         this.createGuide(
             target ?
                 target.getBoundingClientRect().left :
-                this.getLastFieldBoundary(),
+                this.getLastFieldBoundary(groupHeaders),
             'reorder'
         );
         this.updateDragPreview(event.clientX, event.clientY);
@@ -510,6 +847,24 @@ export default class ListTableController {
         this.manager.getState().widths[name] = width;
         this.manager.setWidth(name, width);
         this.layoutTable();
+    }
+
+    onTableClick(event) {
+        const button = event.target.closest('.better-columns-column-menu-button');
+
+        if (!button || !this.table?.contains(button)) {
+            return;
+        }
+
+        const name = button.closest('th[data-name]')?.dataset.name;
+
+        if (!name) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggleColumnMenu(button, name);
     }
 
     onTablePointerMove(event) {
@@ -590,7 +945,7 @@ export default class ListTableController {
         preview.dataset.name = header.dataset.name || '';
 
         clone.querySelectorAll(
-            '.better-columns-resizer, .column-resizer'
+            '.better-columns-resizer, .column-resizer, .better-columns-column-menu-button'
         )
             .forEach(element => element.remove());
         clone.removeAttribute('id');
@@ -646,8 +1001,7 @@ export default class ListTableController {
         preview.style.top = `${position.top}px`;
     }
 
-    getLastFieldBoundary() {
-        const headers = this.getFieldHeaders();
+    getLastFieldBoundary(headers = this.getFieldHeaders()) {
         const last = headers[headers.length - 1];
 
         return last ? last.getBoundingClientRect().right : 0;
@@ -684,6 +1038,7 @@ export default class ListTableController {
 
     detachTable() {
         this.cleanupInteraction();
+        this.closeColumnMenu();
 
         if (this.table) {
             this.table.removeEventListener(
@@ -694,6 +1049,7 @@ export default class ListTableController {
                 'dblclick',
                 this.onDoubleClickBind
             );
+            this.table.removeEventListener('click', this.onTableClickBind);
             this.table.removeEventListener(
                 'pointermove',
                 this.onTablePointerMoveBind
@@ -705,6 +1061,10 @@ export default class ListTableController {
         }
 
         window.removeEventListener('resize', this.onWindowResizeBind);
+        this.listElement?.removeEventListener(
+            'scroll',
+            this.updateScrollShadowBind
+        );
         this.listElement?.classList.remove('better-columns-list');
         this.table?.querySelectorAll('.better-columns-filler-cell')
             .forEach(element => element.remove());

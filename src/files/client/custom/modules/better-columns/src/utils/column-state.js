@@ -1,4 +1,4 @@
-const STATE_VERSION = 2;
+const STATE_VERSION = 3;
 
 /**
  * Return the user-manageable columns from the administrator list layout.
@@ -25,6 +25,22 @@ export function getEligibleLayoutItems(layout) {
 
         return true;
     });
+}
+
+/**
+ * Whether a column can be hidden from the column menu.
+ *
+ * Mirrors the rules of EspoCRM's Columns menu, so every hidden column can be
+ * shown again from there. Link columns, such as the name, are never listed.
+ *
+ * @param {Record<string, any>|undefined} item
+ * @return {boolean}
+ */
+export function canHideLayoutItem(item) {
+    return Boolean(item?.name) &&
+        !item.link &&
+        !item.noLabel &&
+        item.customLabel !== '';
 }
 
 /**
@@ -84,22 +100,59 @@ export function reconcileOrder(storedOrder, administratorOrder) {
 }
 
 /**
+ * Return the pinned columns in display order, followed by the other columns.
+ *
+ * @param {string[]} order
+ * @param {string[]} pinned
+ * @return {string[]}
+ */
+export function buildDisplayOrder(order, pinned) {
+    const pinnedNames = new Set(pinned || []);
+
+    return [
+        ...(pinned || []),
+        ...(order || []).filter(name => !pinnedNames.has(name)),
+    ];
+}
+
+/**
+ * @param {string[]} pinned
+ * @param {string} name
+ * @return {string[]}
+ */
+export function togglePinnedColumn(pinned, name) {
+    if (pinned.includes(name)) {
+        return pinned.filter(item => item !== name);
+    }
+
+    return [...pinned, name];
+}
+
+/**
  * @param {Record<string, any>|null} rawState
  * @param {Array<Record<string, any>>} administratorLayout
  * @return {{
  *     version: number,
  *     order: string[],
+ *     pinned: string[],
  *     widths: Record<string, number>,
  * }}
  */
 export function reconcileState(rawState, administratorLayout) {
     const items = getEligibleLayoutItems(administratorLayout);
     const administratorOrder = items.map(item => item.name);
-    const hasStoredState = [1, STATE_VERSION].includes(rawState?.version);
+    const hasStoredState = [1, 2, STATE_VERSION].includes(rawState?.version);
     const storedOrder = hasStoredState ? rawState.order : [];
     const order = reconcileOrder(storedOrder, administratorOrder);
     const allowed = new Set(administratorOrder);
     const widths = {};
+    const storedPinned = hasStoredState && Array.isArray(rawState.pinned) ?
+        rawState.pinned :
+        [];
+    const pinned = storedPinned
+        .filter((name, index, list) =>
+            allowed.has(name) && list.indexOf(name) === index
+        );
 
     if (hasStoredState && rawState.widths) {
         Object.entries(rawState.widths).forEach(([name, width]) => {
@@ -112,6 +165,7 @@ export function reconcileState(rawState, administratorLayout) {
     return {
         version: STATE_VERSION,
         order,
+        pinned,
         widths,
     };
 }

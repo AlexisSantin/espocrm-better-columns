@@ -1,8 +1,8 @@
 # Better Columns for EspoCRM
 
 Better Columns improves EspoCRM list views with column resizing, double-click
-auto-fit, column reordering, persistent personal layouts, and reset controls
-for column order and widths.
+auto-fit, column reordering, column pinning, persistent personal layouts, and
+reset controls for column order and widths.
 
 Current version: **1.0.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
@@ -14,9 +14,10 @@ Current version: **1.0.0** · [Download the latest release](https://github.com/A
 | Drag a header boundary | Changes only that column's width |
 | Double-click a header boundary | Auto-fits the column to rendered content |
 | Drag empty header space | Moves the header and all corresponding cells |
+| Click a header's options button (⋯) | Opens the column menu with Pin column or Unpin column, and Hide column |
 | Click a sortable header label | Keeps EspoCRM's native sorting |
 | Change visible columns | Keeps the native column menu open |
-| Reset Order and Widths | Restores administrator order and recalculates widths |
+| Reset Order and Widths | Restores administrator order, recalculates widths and removes pins |
 | Navigate away and return | Restores the personal layout |
 
 ## Features
@@ -71,6 +72,28 @@ the administrator's list layout.
 
 ![Dragging the Assigned User header to reorder a column](docs/screenshots/reorder-column.png)
 
+### Pin the first columns
+
+- Hover a column header to show its options button (⋯). It is also shown when
+  the header has keyboard focus or its menu is open.
+- Open the menu and choose **Pin column** or **Unpin column**. Pinned columns
+  have no count limit and no width limit.
+- Pinned columns move to the start of the list and stay fixed while the rest
+  of the table scrolls horizontally. A thin edge marks the last pinned column.
+- Pinned columns keep their pin order. Drag them among themselves to change
+  that order; drag other columns among themselves as before. A column cannot
+  be dragged between the pinned and unpinned groups.
+- Unpinning a column returns it to its previous position among the other
+  columns.
+- Choose **Hide column** in the same menu to hide a column. It is unchecked in
+  the native Columns menu, where it can be shown again. The name column and
+  columns that the native Columns menu does not list cannot be hidden.
+- The menu closes with Escape, a click outside it, or Tab. Use the arrow keys
+  and Enter to choose an item from the keyboard.
+
+Pins are part of the personal layout and follow the same storage rules as
+widths and order.
+
 ### Persistent personal layout
 
 Widths and order are stored locally through EspoCRM's browser storage.
@@ -107,6 +130,8 @@ Only columns active in EspoCRM's **Administration → Entity Manager → Layouts
 EspoCRM's native list settings menu remains responsible for showing and
 hiding columns. The menu stays open while column choices are changed, making
 it possible to configure several columns without reopening it each time.
+**Hide column** in a header's ⋯ menu uses the same stored visibility, so the
+native menu reflects it immediately.
 
 Better Columns adds:
 
