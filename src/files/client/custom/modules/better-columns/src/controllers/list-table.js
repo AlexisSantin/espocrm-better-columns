@@ -181,7 +181,7 @@ export default class ListTableController {
         element.append(this.createPinMenuItem(name));
 
         if (this.manager.canHideColumn(name)) {
-            element.append(...this.createHideMenuItems());
+            element.append(this.createHideMenuItem());
         }
 
         document.body.append(element);
@@ -215,8 +215,8 @@ export default class ListTableController {
         action.dataset.action = 'betterColumnsTogglePin';
         action.setAttribute('aria-disabled', 'false');
         action.innerHTML = [
-            '<span class="item-icon fas fa-thumbtack"></span>',
             `<span class="item-text"></span>`,
+            '<span class="item-icon fas fa-thumbtack"></span>',
         ].join(' ');
         action.querySelector('.item-text').textContent = label;
         item.append(action);
@@ -224,25 +224,23 @@ export default class ListTableController {
         return item;
     }
 
-    createHideMenuItems() {
-        const divider = document.createElement('li');
+    createHideMenuItem() {
         const item = document.createElement('li');
         const action = document.createElement('a');
 
-        divider.className = 'divider';
         action.role = 'menuitem';
         action.tabIndex = -1;
         action.dataset.action = 'betterColumnsHideColumn';
         action.setAttribute('aria-disabled', 'false');
         action.innerHTML = [
-            '<span class="item-icon fas fa-eye-slash"></span>',
             '<span class="item-text"></span>',
+            '<span class="item-icon fas fa-eye-slash"></span>',
         ].join(' ');
         action.querySelector('.item-text').textContent =
             this.translate('Hide Column');
         item.append(action);
 
-        return [divider, item];
+        return item;
     }
 
     positionColumnMenu(button, element) {
@@ -419,8 +417,21 @@ export default class ListTableController {
 
         return Math.max(
             0,
-            this.listElement.clientWidth - staticWidth - 2
+            this.listElement.clientWidth -
+                staticWidth -
+                this.getTableBorderWidth()
         );
+    }
+
+    getTableBorderWidth() {
+        if (!this.table) {
+            return 0;
+        }
+
+        const style = getComputedStyle(this.table);
+
+        return (parseFloat(style.borderLeftWidth) || 0) +
+            (parseFloat(style.borderRightWidth) || 0);
     }
 
     buildColumnModel() {
@@ -525,7 +536,11 @@ export default class ListTableController {
             fieldWidth += width;
         });
 
-        const available = this.listElement.clientWidth;
+        const borderWidth = this.getTableBorderWidth();
+        const available = Math.max(
+            0,
+            this.listElement.clientWidth - borderWidth
+        );
         const fixedWidth = this.staticWidth + fieldWidth;
         const sizing = calculateTableSizing(available, fixedWidth);
         const filler = this.table.querySelector(
@@ -536,7 +551,7 @@ export default class ListTableController {
             filler.style.width = `${sizing.fillerWidth}px`;
         }
 
-        this.table.style.width = `${sizing.tableWidth}px`;
+        this.table.style.width = `${sizing.tableWidth + borderWidth}px`;
         this.table.style.minWidth = '';
         this.table.style.tableLayout = 'fixed';
         this.applyPinnedLayout();
@@ -831,6 +846,11 @@ export default class ListTableController {
         event.preventDefault();
         event.stopPropagation();
 
+        this.manager.setWidth(name, this.measureColumnWidth(name));
+        this.layoutTable();
+    }
+
+    measureColumnWidth(name) {
         const escaped = window.CSS?.escape ?
             window.CSS.escape(name) :
             name.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
@@ -839,13 +859,21 @@ export default class ListTableController {
                 `:scope > tbody > tr.list-row > td.cell[data-name="${escaped}"]`
             ),
         ];
-        const width = measureContentWidth(
+
+        return measureContentWidth(
             cells,
             this.manager.getMinimumWidth()
         );
+    }
 
-        this.manager.getState().widths[name] = width;
-        this.manager.setWidth(name, width);
+    fitAllColumns() {
+        if (!this.table?.isConnected || !this.manager.getState()) {
+            return;
+        }
+
+        this.colMap.forEach((col, name) => {
+            this.manager.setWidth(name, this.measureColumnWidth(name));
+        });
         this.layoutTable();
     }
 

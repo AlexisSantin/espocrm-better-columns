@@ -1,10 +1,15 @@
 # Better Columns for EspoCRM
 
 Better Columns improves EspoCRM list views with column resizing, double-click
-auto-fit, column reordering, column pinning, persistent personal layouts, and
-reset controls for column order and widths.
+auto-fit, one-click fit for all columns, column reordering, column pinning,
+column hiding, persistent personal layouts, and reset controls for column
+order, widths, pins and visibility.
 
 Current version: **1.0.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
+
+![Leads list managed by Better Columns](docs/screenshots/columns-overview.png)
+
+![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
 ## Interaction reference
 
@@ -13,11 +18,12 @@ Current version: **1.0.0** · [Download the latest release](https://github.com/A
 | Hover near a header boundary | Shows the column-resize cursor |
 | Drag a header boundary | Changes only that column's width |
 | Double-click a header boundary | Auto-fits the column to rendered content |
+| Click Fit all columns in the Columns menu | Auto-fits every column to its rendered content |
 | Drag empty header space | Moves the header and all corresponding cells |
 | Click a header's options button (⋯) | Opens the column menu with Pin column or Unpin column, and Hide column |
 | Click a sortable header label | Keeps EspoCRM's native sorting |
 | Change visible columns | Keeps the native column menu open |
-| Reset Order and Widths | Restores administrator order, recalculates widths and removes pins |
+| Reset order, widths, pins and visibility | Restores the administrator's order, default visibility and widths, and removes pins |
 | Navigate away and return | Restores the personal layout |
 
 ## Features
@@ -35,16 +41,21 @@ Current version: **1.0.0** · [Download the latest release](https://github.com/A
 - Resizing one column does not redistribute the remaining space between the
   other columns.
 - When the total width exceeds the list container, EspoCRM's horizontal
-  scrolling remains available.
+  scrolling remains available. The horizontal scrollbar appears only when
+  there is content to scroll.
 
 The native **Column Resize** toggle is hidden while Better Columns is
 active because resizing is always available directly from the headers.
 
 ![Resizing the Email column from its header boundary](docs/screenshots/resize-column-boundary.png)
 
+![Dragging a column boundary to resize it](docs/screenshots/resize-column.gif)
+
 ### Double-click to auto-fit
 
 Double-click a column boundary to fit that column to its rendered content.
+
+![Double-clicking a column boundary to auto-fit it](docs/screenshots/autofit-column.gif)
 
 Auto-fit measures the current list rows and accounts for:
 
@@ -58,6 +69,17 @@ Auto-fit measures the current list rows and accounts for:
 The result keeps a compact minimum and a safe maximum so that a single long
 value cannot create an excessively wide column.
 
+### Fit all columns
+
+Open the **Columns** menu and choose **Fit all columns** to fit every column to
+its rendered content at once. The action uses the same measurement as the
+double-click auto-fit, so each column becomes readable without resizing them
+one by one.
+
+![Fit all columns from the Columns menu](docs/screenshots/fit-all-columns.gif)
+
+![Table after using Fit all columns](docs/screenshots/fit-all-columns.png)
+
 ### Reorder complete columns
 
 - Drag an unused area of a column header to move the column.
@@ -70,7 +92,9 @@ value cannot create an excessively wide column.
 Reordering changes only the current user's presentation. It does not modify
 the administrator's list layout.
 
-![Dragging the Assigned User header to reorder a column](docs/screenshots/reorder-column.png)
+![Dragging a column header to a new position](docs/screenshots/reorder-column.gif)
+
+![Table after reordering a column](docs/screenshots/reorder-column.png)
 
 ### Pin the first columns
 
@@ -79,20 +103,34 @@ the administrator's list layout.
 - Open the menu and choose **Pin column** or **Unpin column**. Pinned columns
   have no count limit and no width limit.
 - Pinned columns move to the start of the list and stay fixed while the rest
-  of the table scrolls horizontally. A thin edge marks the last pinned column.
+  of the table scrolls horizontally. A thin edge marks the last pinned column,
+  and a shadow appears along it once the table is scrolled.
 - Pinned columns keep their pin order. Drag them among themselves to change
   that order; drag other columns among themselves as before. A column cannot
   be dragged between the pinned and unpinned groups.
 - Unpinning a column returns it to its previous position among the other
   columns.
-- Choose **Hide column** in the same menu to hide a column. It is unchecked in
-  the native Columns menu, where it can be shown again. The name column and
-  columns that the native Columns menu does not list cannot be hidden.
 - The menu closes with Escape, a click outside it, or Tab. Use the arrow keys
   and Enter to choose an item from the keyboard.
 
+![Column menu with Pin column and Hide column](docs/screenshots/column-menu.png)
+
+![Pinning a column and scrolling the table horizontally](docs/screenshots/pin-column.gif)
+
+![Pinned column with its shadow while the table is scrolled](docs/screenshots/pinned-shadow.png)
+
 Pins are part of the personal layout and follow the same storage rules as
 widths and order.
+
+### Hide columns
+
+Choose **Hide column** in a header's ⋯ menu to hide that column. It is
+unchecked in the native Columns menu, where it can be shown again.
+
+Link fields such as the name column, and columns without a label, cannot be
+hidden.
+
+![Hiding a column from its header menu](docs/screenshots/hide-column.gif)
 
 ### Persistent personal layout
 
@@ -131,23 +169,34 @@ EspoCRM's native list settings menu remains responsible for showing and
 hiding columns. The menu stays open while column choices are changed, making
 it possible to configure several columns without reopening it each time.
 **Hide column** in a header's ⋯ menu uses the same stored visibility, so the
-native menu reflects it immediately.
+native menu reflects it immediately. The table-columns button next to the
+record count opens this menu.
+
+![Columns menu listing visible and hidden columns](docs/screenshots/columns-menu.png)
 
 Better Columns adds:
 
-**Reset Order and Widths**
+- **Fit all columns**, described above;
+- **Reset order, widths, pins and visibility**, described below.
+
+**Reset order, widths, pins and visibility**
 
 This action:
 
-- clears the current user's stored order and widths for that list;
+- clears the current user's stored order, widths and pins for that list;
+- clears the current user's column visibility choices, so hidden and shown
+  columns return to the administrator's defaults;
 - restores the order from the administrator's current list layout;
 - recalculates initial widths for the available list area;
 - keeps the default view contained in the viewport whenever the number of
   columns makes that possible.
 
-It does not reset which fields are active in the administrator's layout.
+It does not change the fields or the default visibility defined in the
+administrator's layout.
 
-![Reset order and widths action in the list settings menu](docs/screenshots/reset-order-and-widths.png)
+![Reset order, widths, pins and visibility action in the Columns menu](docs/screenshots/reset-order-and-widths.gif)
+
+![Table after resetting order, widths, pins and visibility](docs/screenshots/reset-order-and-widths.png)
 
 ### Reliable EspoCRM navigation
 
@@ -278,7 +327,7 @@ preferences with the latest active fields and discards obsolete entries.
 
 ### Restore the default presentation
 
-Open the list settings menu and choose **Reset Order and Widths**. To remove
+Open the **Columns** menu and choose **Reset order, widths, pins and visibility**. To remove
 all local preferences for the site, clear the site's browser storage.
 
 ### The native Column Resize option reappears
@@ -298,6 +347,8 @@ Important paths:
 src/                 Extension source and packaged files
 src/files/           Files installed into EspoCRM
 src/tests/           JavaScript behavior and metadata tests
+scripts/             Helper scripts, such as README screenshot capture
+docs/screenshots/    Screenshots and GIFs used by this README
 build/               Generated installable ZIP packages
 site/                Local EspoCRM development instance
 ```
@@ -348,6 +399,29 @@ The generated package is written to:
 build/better-columns-<version>.zip
 ```
 
+### README screenshots
+
+`scripts/capture-readme.py` regenerates the images in `docs/screenshots/` from
+a running EspoCRM instance with Playwright and Pillow:
+
+```bash
+pip install playwright pillow
+python -m playwright install --with-deps chromium
+
+ESPO_URL=http://127.0.0.1:8080 \
+ESPO_USER=admin \
+ESPO_PASSWORD=... \
+ESPO_ENTITY=Lead \
+python scripts/capture-readme.py
+```
+
+Credentials are read only from environment variables and are never stored.
+`ESPO_ENTITY` defaults to `Lead`. The script resets the list layout of the
+signed-in user, so run it on a development instance.
+
+The demo `smart-columns.gif` at the top of this README is recorded manually and
+is not produced by the script.
+
 ## Contributing
 
 Issues and pull requests are welcome.
@@ -386,4 +460,4 @@ Better Columns is free software licensed under the
 
 ## Author
 
-Created by Alex Santin.
+Created by Alexis SANTIN.

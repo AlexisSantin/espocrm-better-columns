@@ -246,6 +246,13 @@ export default class ListColumnManager {
         }
 
         const divider = document.createElement('li');
+        const fitItem = document.createElement('li');
+        const fitAction = document.createElement('a');
+        const fitLabel = this.view.translate(
+            'Fit All Columns',
+            'labels',
+            'BetterColumns'
+        );
         const item = document.createElement('li');
         const action = document.createElement('a');
         const label = this.view.translate(
@@ -255,6 +262,15 @@ export default class ListColumnManager {
         );
 
         divider.className = 'divider better-columns-reset-columns-divider';
+        fitItem.className = 'better-columns-fit-columns-item';
+        fitAction.role = 'button';
+        fitAction.tabIndex = 0;
+        fitAction.dataset.action = 'betterColumnsFitColumns';
+        fitAction.title = fitLabel;
+        fitAction.innerHTML = [
+            '<span class="item-icon fas fa-arrows-left-right-to-line"></span>',
+            `<span class="item-text">${this.escapeHtml(fitLabel)}</span>`,
+        ].join(' ');
         item.className = 'better-columns-reset-columns-item';
         action.role = 'button';
         action.tabIndex = 0;
@@ -265,9 +281,11 @@ export default class ListColumnManager {
             `<span class="item-text">${this.escapeHtml(label)}</span>`,
         ].join(' ');
 
+        fitItem.append(fitAction);
         item.append(action);
-        menu.append(divider, item);
+        menu.append(divider, fitItem, item);
     }
+
 
     ensureSettingsToggle() {
         const toggle = this.settingsElement?.querySelector('.dropdown-toggle');
@@ -295,6 +313,19 @@ export default class ListColumnManager {
 
     onSettingsClick(event) {
         this.ensureResetAction();
+
+        const fitAction = event.target.closest(
+            '[data-action="betterColumnsFitColumns"]'
+        );
+
+        if (fitAction) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.closeSettingsMenu();
+            this.tableController.fitAllColumns();
+
+            return;
+        }
 
         const resetAction = event.target.closest(
             '[data-action="betterColumnsResetColumns"]'
@@ -520,6 +551,15 @@ export default class ListColumnManager {
 
         this.store.clear();
         this.state = this.store.load(this.administratorLayout);
+
+        const helper = this.view._listSettingsHelper;
+
+        if (helper) {
+            helper.clearHiddenColumnMap();
+            helper.clearColumnWidthMap();
+        }
+
+        void this.view.getView('settings')?.reRender();
 
         try {
             await this.refresh();

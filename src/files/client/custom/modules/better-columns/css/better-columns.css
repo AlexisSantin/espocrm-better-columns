@@ -208,14 +208,17 @@ body.better-columns-is-reordering * {
     align-items: center;
     display: flex;
     gap: 8px;
+    justify-content: space-between;
 }
 
 .better-columns-column-menu > li > a .item-icon {
+    font-size: 11px;
     width: 13px;
 }
 
-[dir="rtl"] .better-columns-column-menu > li > a {
-    flex-direction: row-reverse;
+.better-columns-column-menu > li > a:focus:not(:focus-visible):not(:hover) {
+    background-color: transparent;
+    color: var(--dropdown-link-color);
 }
 
 /* Browsers do not paint box-shadow on cells in the collapsed border model, so the managed
@@ -315,6 +318,7 @@ body.better-columns-is-reordering * {
 
 .settings-container [data-action="toggleColumn"] .check-icon {
     display: inline-block !important;
+    font-size: 11px;
 }
 
 .settings-container [data-action="toggleColumn"] .check-icon::before {

@@ -17,7 +17,7 @@
     "prepare-test": "node build --prepare-test"
   },
   "type": "module",
-  "author": "Alex Santin",
+  "author": "Alexis SANTIN",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "espo-extension-tools": "github:espocrm/extension-tools#0.4.5",
