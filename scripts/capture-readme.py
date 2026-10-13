@@ -32,6 +32,7 @@ VIEWPORT = {'width': 1000, 'height': 800}
 GIF_WIDTH = 960
 FRAME_MS = 120
 HOLD_FRAMES = 5
+RESULT_HOLD_MS = 3500
 TABLE = 'table.better-columns-managed-table'
 MENU_BUTTON = '.better-columns-column-menu-button'
 COLUMNS_TOGGLE = '.better-columns-settings-toggle'
@@ -88,7 +89,7 @@ class Capture:
             self.page.screenshot(clip=self.region(extra_bottom))
         )
 
-    def gif(self, name):
+    def gif(self, name, hold_ms=FRAME_MS * HOLD_FRAMES):
         if not self.frames:
             raise RuntimeError(f'No frames captured for {name}')
 
@@ -105,7 +106,7 @@ class Capture:
             for img in images
         ]
         durations = [FRAME_MS] * len(frames)
-        durations[-1] = FRAME_MS * HOLD_FRAMES
+        durations[-1] = hold_ms
 
         frames[0].save(
             OUT / name,
@@ -132,10 +133,6 @@ def open_list(page, url, entity):
     page.wait_for_selector(TABLE, timeout=60000)
     page.wait_for_timeout(800)
     page.locator(TABLE).scroll_into_view_if_needed()
-
-
-def header_box(page, name):
-    return page.locator(f'thead th[data-name="{name}"]').bounding_box()
 
 
 def resizer_point(page, name):
@@ -270,18 +267,7 @@ def capture_all(page):
     page.wait_for_timeout(800)
     for _ in range(HOLD_FRAMES * 2):
         cap.frame()
-    cap.gif('fit-all-columns.gif')
-
-    print('Reorder by drag')
-    reset_layout(page)
-    names = page.evaluate(HEADER_NAMES_JS)
-    source = header_box(page, names[1])
-    target = header_box(page, names[3])
-    start = (source['x'] + 40, source['y'] + source['height'] / 2)
-    end = (target['x'] + 40, target['y'] + target['height'] / 2)
-    cap.frame()
-    drag(page, cap, start, end, steps=16)
-    cap.gif('reorder-column.gif')
+    cap.gif('fit-all-columns.gif', hold_ms=RESULT_HOLD_MS)
 
     print('Pin column')
     reset_layout(page)
@@ -318,7 +304,7 @@ def capture_all(page):
     for _ in range(HOLD_FRAMES * 2):
         cap.frame(extra_bottom=340)
     close_menus(page)
-    cap.gif('reset-order-and-widths.gif')
+    cap.gif('reset-order-and-widths.gif', hold_ms=RESULT_HOLD_MS)
 
 
 def main():

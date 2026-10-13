@@ -86,8 +86,6 @@ one by one.
 Reordering changes only the current user's presentation. It does not modify
 the administrator's list layout.
 
-![Dragging a column header to a new position](docs/screenshots/reorder-column.gif)
-
 ### Pin the first columns
 
 - Hover a column header to show its options button (⋯). It is also shown when
