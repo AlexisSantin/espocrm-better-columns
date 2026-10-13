@@ -5,7 +5,7 @@ auto-fit, one-click fit for all columns, column reordering, column pinning,
 column hiding, persistent personal layouts, and reset controls for column
 order, widths, pins and visibility.
 
-Current version: **1.0.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
+Current version: **1.1.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
 ![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
@@ -246,7 +246,7 @@ read, update or delete CRM records through a custom API.
 
 ## Installation
 
-1. Download `better-columns-1.0.0.zip` from the
+1. Download `better-columns-1.1.0.zip` from the
   [latest GitHub release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest).
 2. In EspoCRM, open **Administration → Extensions**.
 3. Upload the ZIP file without extracting it.
@@ -275,7 +275,7 @@ they are harmless and are ignored when the extension is absent.
 - PHP `>= 8.3`
 - A modern desktop browser
 
-Version 1.0.0 has been developed and tested against EspoCRM 10.0.3.
+Version 1.1.0 has been developed and tested against EspoCRM 10.0.3.
 
 Resize handles are intentionally hidden on small mobile viewports, where
 horizontal touch scrolling has priority.
