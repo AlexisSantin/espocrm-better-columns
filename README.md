@@ -196,6 +196,8 @@ After installation, open:
 
 **Administration → Customization → Better Columns**
 
+![Better Columns administration settings](docs/screenshots/administration-settings.png)
+
 The page provides four settings:
 
 - **Enable enhanced column management** — global on/off switch.
