@@ -83,13 +83,6 @@ class Capture:
 
         return {'x': x, 'y': y, 'width': width, 'height': height}
 
-    def shot(self, name, extra_bottom=0):
-        self.page.screenshot(
-            path=str(OUT / name),
-            clip=self.region(extra_bottom),
-        )
-        print(f'  wrote {name}')
-
     def frame(self, extra_bottom=0):
         self.frames.append(
             self.page.screenshot(clip=self.region(extra_bottom))
@@ -241,7 +234,6 @@ def capture_all(page):
     print('Resetting to the admin default layout')
     reset_layout(page)
     close_menus(page)
-    cap.shot('columns-overview.png')
 
     names = page.evaluate(HEADER_NAMES_JS)
     first, second = names[0], names[1]
@@ -254,7 +246,6 @@ def capture_all(page):
     page.mouse.down()
     page.mouse.move(x + 60, y, steps=6)
     page.wait_for_timeout(200)
-    cap.shot('resize-column-boundary.png')
     page.mouse.up()
     page.wait_for_timeout(200)
 
@@ -280,7 +271,6 @@ def capture_all(page):
     for _ in range(HOLD_FRAMES * 2):
         cap.frame()
     cap.gif('fit-all-columns.gif')
-    cap.shot('fit-all-columns.png')
 
     print('Reorder by drag')
     reset_layout(page)
@@ -292,14 +282,12 @@ def capture_all(page):
     cap.frame()
     drag(page, cap, start, end, steps=16)
     cap.gif('reorder-column.gif')
-    cap.shot('reorder-column.png')
 
     print('Pin column')
     reset_layout(page)
     fit_all_columns(page)
     pin_target = page.evaluate(HEADER_NAMES_JS)[0]
     open_column_menu(page, pin_target)
-    cap.shot('column-menu.png', extra_bottom=120)
     cap.frame(extra_bottom=120)
     page.click('[data-action="betterColumnsTogglePin"]')
     page.wait_for_timeout(300)
@@ -307,7 +295,6 @@ def capture_all(page):
     for _ in range(HOLD_FRAMES):
         cap.frame()
     scroll_table(page, cap, 420)
-    cap.shot('pinned-shadow.png')
     scroll_table(page, cap, 0)
     cap.gif('pin-column.gif')
 
@@ -323,11 +310,6 @@ def capture_all(page):
         cap.frame()
     cap.gif('hide-column.gif')
 
-    print('Columns menu')
-    open_columns_menu(page)
-    cap.shot('columns-menu.png', extra_bottom=340)
-    close_menus(page)
-
     print('Reset order, widths, pins and visibility')
     open_columns_menu(page)
     cap.frame(extra_bottom=340)
@@ -336,7 +318,6 @@ def capture_all(page):
     for _ in range(HOLD_FRAMES * 2):
         cap.frame(extra_bottom=340)
     close_menus(page)
-    cap.shot('reset-order-and-widths.png')
     cap.gif('reset-order-and-widths.gif')
 
 

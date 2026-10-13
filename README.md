@@ -7,8 +7,6 @@ order, widths, pins and visibility.
 
 Current version: **1.0.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
-![Leads list managed by Better Columns](docs/screenshots/columns-overview.png)
-
 ![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
 ## Interaction reference
@@ -47,8 +45,6 @@ Current version: **1.0.0** · [Download the latest release](https://github.com/A
 The native **Column Resize** toggle is hidden while Better Columns is
 active because resizing is always available directly from the headers.
 
-![Resizing the Email column from its header boundary](docs/screenshots/resize-column-boundary.png)
-
 ![Dragging a column boundary to resize it](docs/screenshots/resize-column.gif)
 
 ### Double-click to auto-fit
@@ -78,8 +74,6 @@ one by one.
 
 ![Fit all columns from the Columns menu](docs/screenshots/fit-all-columns.gif)
 
-![Table after using Fit all columns](docs/screenshots/fit-all-columns.png)
-
 ### Reorder complete columns
 
 - Drag an unused area of a column header to move the column.
@@ -93,8 +87,6 @@ Reordering changes only the current user's presentation. It does not modify
 the administrator's list layout.
 
 ![Dragging a column header to a new position](docs/screenshots/reorder-column.gif)
-
-![Table after reordering a column](docs/screenshots/reorder-column.png)
 
 ### Pin the first columns
 
@@ -113,11 +105,7 @@ the administrator's list layout.
 - The menu closes with Escape, a click outside it, or Tab. Use the arrow keys
   and Enter to choose an item from the keyboard.
 
-![Column menu with Pin column and Hide column](docs/screenshots/column-menu.png)
-
 ![Pinning a column and scrolling the table horizontally](docs/screenshots/pin-column.gif)
-
-![Pinned column with its shadow while the table is scrolled](docs/screenshots/pinned-shadow.png)
 
 Pins are part of the personal layout and follow the same storage rules as
 widths and order.
@@ -172,8 +160,6 @@ it possible to configure several columns without reopening it each time.
 native menu reflects it immediately. The table-columns button next to the
 record count opens this menu.
 
-![Columns menu listing visible and hidden columns](docs/screenshots/columns-menu.png)
-
 Better Columns adds:
 
 - **Fit all columns**, described above;
@@ -195,8 +181,6 @@ It does not change the fields or the default visibility defined in the
 administrator's layout.
 
 ![Reset order, widths, pins and visibility action in the Columns menu](docs/screenshots/reset-order-and-widths.gif)
-
-![Table after resetting order, widths, pins and visibility](docs/screenshots/reset-order-and-widths.png)
 
 ### Reliable EspoCRM navigation
 
@@ -226,8 +210,6 @@ The page provides four settings:
   entities on which Better Columns is available.
 
 The entity selector supports standard and custom object entities.
-
-![Better Columns administration settings](docs/screenshots/administration-settings.png)
 
 After installation, Better Columns is enabled for all compatible
 record-list entities, while Administration lists remain disabled until
@@ -399,9 +381,9 @@ The generated package is written to:
 build/better-columns-<version>.zip
 ```
 
-### README screenshots
+### README GIFs
 
-`scripts/capture-readme.py` regenerates the images in `docs/screenshots/` from
+`scripts/capture-readme.py` regenerates the GIFs in `docs/screenshots/` from
 a running EspoCRM instance with Playwright and Pillow:
 
 ```bash
