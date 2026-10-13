@@ -115,6 +115,8 @@ widths and order.
 Choose **Hide column** in a header's ⋯ menu to hide that column. It is
 unchecked in the native Columns menu, where it can be shown again.
 
+![Hide column in a header's options menu](docs/screenshots/hide-column.png)
+
 Link fields such as the name column, and columns without a label, cannot be
 hidden.
 
