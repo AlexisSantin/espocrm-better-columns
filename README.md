@@ -72,6 +72,8 @@ its rendered content at once. The action uses the same measurement as the
 double-click auto-fit, so each column becomes readable without resizing them
 one by one.
 
+![Fit all columns from the Columns menu](docs/screenshots/fit-all-columns.gif)
+
 ### Reorder complete columns
 
 - Drag an unused area of a column header to move the column.
