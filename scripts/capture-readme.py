@@ -32,7 +32,6 @@ VIEWPORT = {'width': 1000, 'height': 800}
 GIF_WIDTH = 960
 FRAME_MS = 120
 HOLD_FRAMES = 5
-RESULT_HOLD_MS = 3500
 TABLE = 'table.better-columns-managed-table'
 MENU_BUTTON = '.better-columns-column-menu-button'
 COLUMNS_TOGGLE = '.better-columns-settings-toggle'
@@ -89,7 +88,7 @@ class Capture:
             self.page.screenshot(clip=self.region(extra_bottom))
         )
 
-    def gif(self, name, hold_ms=FRAME_MS * HOLD_FRAMES):
+    def gif(self, name):
         if not self.frames:
             raise RuntimeError(f'No frames captured for {name}')
 
@@ -106,7 +105,7 @@ class Capture:
             for img in images
         ]
         durations = [FRAME_MS] * len(frames)
-        durations[-1] = hold_ms
+        durations[-1] = FRAME_MS * HOLD_FRAMES
 
         frames[0].save(
             OUT / name,
@@ -199,18 +198,6 @@ def open_column_menu(page, name):
     page.wait_for_timeout(200)
 
 
-def find_hideable_column(page, names):
-    for name in names[1:]:
-        open_column_menu(page, name)
-        found = page.locator('[data-action="betterColumnsHideColumn"]').count() > 0
-        close_menus(page)
-
-        if found:
-            return name
-
-    raise RuntimeError('No hideable column found')
-
-
 def scroll_table(page, cap, target, steps=12):
     scroller = page.evaluate_handle(FIND_SCROLLER_JS)
     start = scroller.evaluate('el => el.scrollLeft')
@@ -260,15 +247,6 @@ def capture_all(page):
         cap.frame()
     cap.gif('autofit-column.gif')
 
-    print('Fit all columns')
-    open_columns_menu(page)
-    cap.frame()
-    page.click('[data-action="betterColumnsFitColumns"]')
-    page.wait_for_timeout(800)
-    for _ in range(HOLD_FRAMES * 2):
-        cap.frame()
-    cap.gif('fit-all-columns.gif', hold_ms=RESULT_HOLD_MS)
-
     print('Pin column')
     reset_layout(page)
     fit_all_columns(page)
@@ -284,27 +262,6 @@ def capture_all(page):
     scroll_table(page, cap, 0)
     cap.gif('pin-column.gif')
 
-    print('Hide column')
-    hide_target = find_hideable_column(page, page.evaluate(HEADER_NAMES_JS))
-    open_column_menu(page, hide_target)
-    for _ in range(HOLD_FRAMES):
-        cap.frame()
-    page.click('[data-action="betterColumnsHideColumn"]')
-    page.wait_for_timeout(500)
-    close_menus(page)
-    for _ in range(HOLD_FRAMES):
-        cap.frame()
-    cap.gif('hide-column.gif')
-
-    print('Reset order, widths, pins and visibility')
-    open_columns_menu(page)
-    cap.frame(extra_bottom=340)
-    page.click('[data-action="betterColumnsResetColumns"]')
-    page.wait_for_timeout(800)
-    for _ in range(HOLD_FRAMES * 2):
-        cap.frame(extra_bottom=340)
-    close_menus(page)
-    cap.gif('reset-order-and-widths.gif', hold_ms=RESULT_HOLD_MS)
 
 
 def main():

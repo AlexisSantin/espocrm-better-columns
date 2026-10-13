@@ -72,8 +72,6 @@ its rendered content at once. The action uses the same measurement as the
 double-click auto-fit, so each column becomes readable without resizing them
 one by one.
 
-![Fit all columns from the Columns menu](docs/screenshots/fit-all-columns.gif)
-
 ### Reorder complete columns
 
 - Drag an unused area of a column header to move the column.
@@ -115,8 +113,6 @@ unchecked in the native Columns menu, where it can be shown again.
 
 Link fields such as the name column, and columns without a label, cannot be
 hidden.
-
-![Hiding a column from its header menu](docs/screenshots/hide-column.gif)
 
 ### Persistent personal layout
 
@@ -177,8 +173,6 @@ This action:
 
 It does not change the fields or the default visibility defined in the
 administrator's layout.
-
-![Reset order, widths, pins and visibility action in the Columns menu](docs/screenshots/reset-order-and-widths.gif)
 
 ### Reliable EspoCRM navigation
 
