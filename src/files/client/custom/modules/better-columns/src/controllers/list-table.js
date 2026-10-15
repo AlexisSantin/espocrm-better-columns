@@ -184,6 +184,10 @@ export default class ListTableController {
             element.append(this.createHideMenuItem());
         }
 
+        if (this.manager.canFilterColumn(name)) {
+            element.append(this.createFilterMenuItem());
+        }
+
         document.body.append(element);
 
         this.columnMenu = {button, element, name};
@@ -202,6 +206,25 @@ export default class ListTableController {
         document.addEventListener('keydown', this.onDocumentKeydownBind, true);
         window.addEventListener('resize', this.closeColumnMenuBind);
         window.addEventListener('scroll', this.closeColumnMenuBind, true);
+    }
+
+    createFilterMenuItem() {
+        const item = document.createElement('li');
+        const action = document.createElement('a');
+
+        action.role = 'menuitem';
+        action.tabIndex = -1;
+        action.dataset.action = 'betterColumnsFilterColumn';
+        action.setAttribute('aria-disabled', 'false');
+        action.innerHTML = [
+            '<span class="item-text"></span>',
+            '<span class="item-icon fas fa-filter"></span>',
+        ].join(' ');
+        action.querySelector('.item-text').textContent =
+            this.translate('Filter Column');
+        item.append(action);
+
+        return item;
     }
 
     createPinMenuItem(name) {
@@ -302,6 +325,12 @@ export default class ListTableController {
 
         if (actionName === 'betterColumnsHideColumn') {
             void this.manager.setColumnHidden(name, true);
+
+            return;
+        }
+
+        if (actionName === 'betterColumnsFilterColumn') {
+            void this.manager.activateColumnFilter(name);
 
             return;
         }

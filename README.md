@@ -5,7 +5,7 @@ auto-fit, one-click fit for all columns, column reordering, column pinning,
 column hiding, persistent personal layouts, and reset controls for column
 order, widths, pins and visibility.
 
-Current version: **1.1.1** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
+Current version: **1.3.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
 ![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
@@ -18,7 +18,7 @@ Current version: **1.1.1** · [Download the latest release](https://github.com/A
 | Double-click a header boundary | Auto-fits the column to rendered content |
 | Click Fit all columns in the Columns menu | Auto-fits every column to its rendered content |
 | Drag empty header space | Moves the header and all corresponding cells |
-| Click a header's options button (⋯) | Opens the column menu with Pin column or Unpin column, and Hide column |
+| Click a header's options button (⋯) | Opens the column menu with Pin column or Unpin column, Hide column, and Filter column |
 | Click a sortable header label | Keeps EspoCRM's native sorting |
 | Change visible columns | Keeps the native column menu open |
 | Reset order, widths, pins and visibility | Restores the administrator's order, default visibility and widths, and removes pins |
@@ -109,6 +109,18 @@ the administrator's list layout.
 
 Pins are part of the personal layout and follow the same storage rules as
 widths and order.
+
+### Filter a column from its header
+
+![Pin, Hide and Filter column in a header's options menu](docs/screenshots/column-options-menu.png)
+
+- Open a header's options menu (⋯) and choose **Filter column** to open that
+  column's filter in the search panel.
+- The item appears only when the administrator has made the field available
+  as a list filter, and only for fields you can access.
+- If a filter is already applied to the column, the item focuses it instead.
+- When a preset other than **All** is selected, the menu switches to **All**
+  so the filter can be shown.
 
 ### Hide columns
 
@@ -246,7 +258,7 @@ read, update or delete CRM records through a custom API.
 
 ## Installation
 
-1. Download `better-columns-1.1.1.zip` from the
+1. Download `better-columns-1.3.0.zip` from the
   [latest GitHub release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest).
 2. In EspoCRM, open **Administration → Extensions**.
 3. Upload the ZIP file without extracting it.
@@ -275,7 +287,7 @@ they are harmless and are ignored when the extension is absent.
 - PHP `>= 8.3`
 - A modern desktop browser
 
-Version 1.1.1 has been developed and tested against EspoCRM 10.0.3.
+Version 1.3.0 has been developed and tested against EspoCRM 10.0.3.
 
 Resize handles are intentionally hidden on small mobile viewports, where
 horizontal touch scrolling has priority.

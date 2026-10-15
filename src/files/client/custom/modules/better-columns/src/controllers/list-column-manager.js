@@ -466,6 +466,108 @@ export default class ListColumnManager {
     }
 
     /**
+     * EspoCRM only lists the fields the administrator made available as
+     * list filters, and it omits the fields the user cannot access.
+     *
+     * @param {string} name
+     * @returns {HTMLElement|null}
+     */
+    getSearchView() {
+        return this.view.getParentView?.()?.getView('search') || null;
+    }
+
+    getSearchFilterItem(name) {
+        const element = this.getSearchView()?.element;
+
+        return element?.querySelector(
+            `ul.filter-list > li.filter-item[data-name="${CSS.escape(name)}"]`
+        ) || null;
+    }
+
+    canFilterColumn(name) {
+        return Boolean(this.getSearchFilterItem(name));
+    }
+
+    /**
+     * Reuse the search panel's own add-filter handler, so the filter is
+     * created and applied exactly as if it had been picked from the panel.
+     *
+     * @param {string} name
+     */
+    async activateColumnFilter(name) {
+        const searchView = this.getSearchView();
+
+        if (!searchView?.element || !this.canFilterColumn(name)) {
+            return;
+        }
+
+        if (searchView.element.querySelector('.advanced-filters')
+            ?.classList.contains('hidden')
+        ) {
+            await this.showAllSearchFilters(searchView);
+        }
+
+        const item = this.getSearchFilterItem(name);
+
+        if (!item) {
+            return;
+        }
+
+        if (!item.classList.contains('hidden')) {
+            item.querySelector('a[data-action="addFilter"]')?.click();
+        }
+
+        this.focusSearchFilter(searchView, name);
+    }
+
+    /**
+     * A non-default preset hides the advanced filters panel, so switch back
+     * to the "all" preset and wait for the search panel to re-render.
+     *
+     * @param {import('views/record/search').default} searchView
+     * @returns {Promise<void>}
+     */
+    showAllSearchFilters(searchView) {
+        const allPreset = searchView.element.querySelector(
+            'a.preset[data-action="selectPreset"][data-name=""]'
+        );
+
+        if (!allPreset) {
+            return Promise.resolve();
+        }
+
+        return new Promise(resolve => {
+            searchView.once('after:render', resolve);
+            allPreset.click();
+        });
+    }
+
+    focusSearchFilter(searchView, name, attemptsLeft = 20) {
+        const container = searchView.element?.querySelector(
+            `.advanced-filters .filter[data-name="${CSS.escape(name)}"]`
+        );
+        const visibleInputs = [...(container?.querySelectorAll(
+            '.main-element, input:not([type="hidden"]), select, textarea'
+        ) || [])].filter(element => element.getClientRects().length > 0);
+        const input = visibleInputs.find(
+            element => element.classList.contains('main-element')
+        ) || visibleInputs[0];
+
+        if (input) {
+            input.focus();
+
+            return;
+        }
+
+        if (attemptsLeft > 0) {
+            setTimeout(
+                () => this.focusSearchFilter(searchView, name, attemptsLeft - 1),
+                50
+            );
+        }
+    }
+
+    /**
      * Store the hidden state in EspoCRM's own map, so the native Columns
      * menu and the list rendering stay in sync with the table.
      *
