@@ -1,7 +1,7 @@
 {
     "module": "BetterColumns",
     "name": "Better Columns",
-    "description": "Column resizing, double-click auto-fit, reordering and persistent personal layouts for EspoCRM list views.",
+    "description": "Resize, auto-fit, drag to reorder, pin, hide and reset list view columns in EspoCRM. Each user keeps their own saved layout. Source and documentation: https://github.com/AlexisSantin/espocrm-better-columns",
     "author": "Alexis SANTIN",
     "bundled": true,
     "acceptableVersions": [
