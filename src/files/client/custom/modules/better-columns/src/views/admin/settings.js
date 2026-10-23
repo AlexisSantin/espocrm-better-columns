@@ -17,6 +17,16 @@ export default class BetterColumnsSettingsView
                     ],
                 },
             },
+            betterColumnsBottomPanelEnabled: {
+                visible: {
+                    conditionGroup: [
+                        {
+                            attribute: 'betterColumnsEnabled',
+                            type: 'isTrue',
+                        },
+                    ],
+                },
+            },
             betterColumnsAllEntities: {
                 visible: {
                     conditionGroup: [
@@ -51,6 +61,10 @@ export default class BetterColumnsSettingsView
 
         if (this.model.get('betterColumnsAdminEnabled') == null) {
             this.model.set('betterColumnsAdminEnabled', false);
+        }
+
+        if (this.model.get('betterColumnsBottomPanelEnabled') == null) {
+            this.model.set('betterColumnsBottomPanelEnabled', false);
         }
 
         if (this.model.get('betterColumnsAllEntities') == null) {

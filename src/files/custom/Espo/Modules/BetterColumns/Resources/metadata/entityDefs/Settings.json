@@ -10,6 +10,11 @@
             "default": false,
             "tooltip": true
         },
+        "betterColumnsBottomPanelEnabled": {
+            "type": "bool",
+            "default": false,
+            "tooltip": true
+        },
         "betterColumnsAllEntities": {
             "type": "bool",
             "default": true,

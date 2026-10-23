@@ -74,7 +74,8 @@ export default class ListColumnManager {
             !isBetterColumnsEnabledForEntity(
                 this.view.getConfig(),
                 this.entityType,
-                isAdministration
+                isAdministration,
+                this.isInBottomPanel()
             )
         ) {
             return;
@@ -93,6 +94,16 @@ export default class ListColumnManager {
         this.observeViewDom();
         this.tableController.attach();
         this.bindPersistentSettingsMenu();
+    }
+
+    /**
+     * Relationship lists are rendered by a panel, which belongs to the
+     * detail view's bottom container.
+     *
+     * @return {boolean}
+     */
+    isInBottomPanel() {
+        return this.view.getParentView?.()?.getParentView?.()?.name === 'bottom';
     }
 
     onViewRemove(options = {}) {

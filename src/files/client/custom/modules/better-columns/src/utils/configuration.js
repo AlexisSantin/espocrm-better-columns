@@ -5,12 +5,14 @@
  * @param {import('models/settings').default} config
  * @param {string} entityType
  * @param {boolean} [isAdministration=false]
+ * @param {boolean} [isBottomPanel=false]
  * @return {boolean}
  */
 export default function isBetterColumnsEnabledForEntity(
     config,
     entityType,
-    isAdministration = false
+    isAdministration = false,
+    isBottomPanel = false
 ) {
     if (config.get('betterColumnsEnabled') === false) {
         return false;
@@ -19,6 +21,13 @@ export default function isBetterColumnsEnabledForEntity(
     if (
         isAdministration &&
         config.get('betterColumnsAdminEnabled') !== true
+    ) {
+        return false;
+    }
+
+    if (
+        isBottomPanel &&
+        config.get('betterColumnsBottomPanelEnabled') !== true
     ) {
         return false;
     }

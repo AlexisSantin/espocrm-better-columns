@@ -5,12 +5,14 @@
     "fields": {
         "betterColumnsEnabled": "Activer la gestion avancée des colonnes",
         "betterColumnsAdminEnabled": "Activer dans l’administration",
+        "betterColumnsBottomPanelEnabled": "Activer dans les panneaux du bas",
         "betterColumnsAllEntities": "Activer pour toutes les entités",
         "betterColumnsEntityList": "Entités activées"
     },
     "tooltips": {
         "betterColumnsEnabled": "Active ou désactive globalement Better Columns.",
         "betterColumnsAdminEnabled": "Active ou désactive Better Columns dans toutes les listes de l’administration.",
+        "betterColumnsBottomPanelEnabled": "Active ou désactive Better Columns dans les listes liées affichées en bas d’une fiche, comme les Target Lists. Désactivé par défaut : ces listes gardent les colonnes natives d’EspoCRM.",
         "betterColumnsAllEntities": "Rend le redimensionnement et le déplacement avancés disponibles pour toutes les entités compatibles.",
         "betterColumnsEntityList": "Entités pour lesquelles la gestion avancée des colonnes est disponible lorsque l’option toutes les entités est désactivée."
     }

@@ -16,6 +16,12 @@
             ],
             [
                 {
+                    "name": "betterColumnsBottomPanelEnabled"
+                },
+                false
+            ],
+            [
+                {
                     "name": "betterColumnsAllEntities"
                 },
                 false

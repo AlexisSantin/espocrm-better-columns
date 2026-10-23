@@ -5,12 +5,14 @@
     "fields": {
         "betterColumnsEnabled": "Enable enhanced column management",
         "betterColumnsAdminEnabled": "Enable in Administration",
+        "betterColumnsBottomPanelEnabled": "Enable in bottom panels",
         "betterColumnsAllEntities": "Enable for all entities",
         "betterColumnsEntityList": "Enabled entities"
     },
     "tooltips": {
         "betterColumnsEnabled": "Globally enables or disables Better Columns.",
         "betterColumnsAdminEnabled": "Enables or disables Better Columns in all Administration lists.",
+        "betterColumnsBottomPanelEnabled": "Enables or disables Better Columns in relationship lists shown in bottom panels, such as Target Lists on a record. Disabled by default, so these lists keep the native EspoCRM columns.",
         "betterColumnsAllEntities": "Makes enhanced column resizing and reordering available for every compatible entity.",
         "betterColumnsEntityList": "Entities where enhanced column management is available when the all-entities option is disabled."
     }

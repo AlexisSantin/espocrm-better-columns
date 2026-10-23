@@ -43,7 +43,7 @@ test('administration entry opens the Better Columns settings view', async () => 
     );
 });
 
-test('settings expose global, administration, and per-entity activation fields', async () => {
+test('settings expose global, administration, bottom panel, and per-entity activation fields', async () => {
     const metadata = JSON.parse(
         await readFile(settingsMetadataPath, 'utf8')
     );
@@ -53,6 +53,7 @@ test('settings expose global, administration, and per-entity activation fields',
         [
             'betterColumnsEnabled',
             'betterColumnsAdminEnabled',
+            'betterColumnsBottomPanelEnabled',
             'betterColumnsAllEntities',
             'betterColumnsEntityList',
         ]
@@ -75,6 +76,7 @@ test('settings expose global, administration, and per-entity activation fields',
         [
             'betterColumnsEnabled',
             'betterColumnsAdminEnabled',
+            'betterColumnsBottomPanelEnabled',
             'betterColumnsAllEntities',
             'betterColumnsEntityList',
         ]

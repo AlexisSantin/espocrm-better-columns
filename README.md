@@ -5,7 +5,7 @@ auto-fit, one-click fit for all columns, column reordering, column pinning,
 column hiding, persistent personal layouts, and reset controls for column
 order, widths, pins and visibility.
 
-Current version: **1.3.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
+Current version: **1.4.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
 ![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
@@ -210,12 +210,15 @@ After installation, open:
 
 ![Better Columns administration settings](docs/screenshots/administration-settings.png)
 
-The page provides four settings:
+The page provides five settings:
 
 - **Enable enhanced column management** — global on/off switch.
 - **Enable in Administration** — enables Better Columns in Administration
   lists independently from regular record lists. It remains subject to entity
   compatibility and ACL.
+- **Enable in bottom panels** — enables Better Columns in relationship lists
+  shown at the bottom of a record, such as Target Lists on a Lead or Contact.
+  It is disabled by default, so these lists keep EspoCRM's native columns.
 - **Enable for all entities** — enables the extension for every compatible
   entity.
 - **Enabled entities** — when the previous option is disabled, selects the
@@ -225,9 +228,10 @@ The entity selector supports standard and custom object entities.
 
 After installation, Better Columns is enabled for all compatible
 record-list entities, while Administration lists remain disabled until
-**Enable in Administration** is turned on.
+**Enable in Administration** is turned on, and bottom-panel lists remain
+native until **Enable in bottom panels** is turned on.
 
-The Administration setting defaults to disabled.
+The Administration and bottom-panel settings default to disabled.
 
 The settings are stored under these EspoCRM configuration keys:
 
@@ -235,6 +239,7 @@ The settings are stored under these EspoCRM configuration keys:
 | --- | --- | --- |
 | Enable enhanced column management | `betterColumnsEnabled` | `true` |
 | Enable in Administration | `betterColumnsAdminEnabled` | `false` |
+| Enable in bottom panels | `betterColumnsBottomPanelEnabled` | `false` |
 | Enable for all entities | `betterColumnsAllEntities` | `true` |
 | Enabled entities | `betterColumnsEntityList` | `[]` |
 
@@ -258,7 +263,7 @@ read, update or delete CRM records through a custom API.
 
 ## Installation
 
-1. Download `better-columns-1.3.0.zip` from the
+1. Download `better-columns-1.4.0.zip` from the
   [latest GitHub release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest).
 2. In EspoCRM, open **Administration → Extensions**.
 3. Upload the ZIP file without extracting it.
@@ -287,7 +292,7 @@ they are harmless and are ignored when the extension is absent.
 - PHP `>= 8.3`
 - A modern desktop browser
 
-Version 1.3.0 has been developed and tested against EspoCRM 10.0.3.
+Version 1.4.0 has been developed and tested against EspoCRM 10.0.3.
 
 Resize handles are intentionally hidden on small mobile viewports, where
 horizontal touch scrolling has priority.
