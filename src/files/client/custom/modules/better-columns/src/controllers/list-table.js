@@ -14,6 +14,8 @@ import {
     getDragPreviewPosition,
     getHeaderLabel,
 } from 'better-columns:utils/drag-preview';
+import ScrollHintsController from
+    'better-columns:controllers/scroll-hints';
 
 export default class ListTableController {
 
@@ -28,6 +30,7 @@ export default class ListTableController {
         this.staticWidth = 0;
         this.activeInteraction = null;
         this.columnMenu = null;
+        this.scrollHints = new ScrollHintsController();
 
         this.onPointerDownBind = this.onPointerDown.bind(this);
         this.onDoubleClickBind = this.onDoubleClick.bind(this);
@@ -90,6 +93,7 @@ export default class ListTableController {
         this.captureInitialWidths();
         this.buildColumnModel();
         this.layoutTable();
+        this.scrollHints.attach(this.listElement, table);
     }
 
     applyColumnOrder() {
@@ -584,6 +588,7 @@ export default class ListTableController {
         this.table.style.minWidth = '';
         this.table.style.tableLayout = 'fixed';
         this.applyPinnedLayout();
+        this.scrollHints.update();
     }
 
     applyPinnedLayout() {
@@ -1096,6 +1101,7 @@ export default class ListTableController {
     detachTable() {
         this.cleanupInteraction();
         this.closeColumnMenu();
+        this.scrollHints.detach();
 
         if (this.table) {
             this.table.removeEventListener(

@@ -328,3 +328,99 @@ body.better-columns-is-reordering * {
 .settings-container [data-action="toggleColumn"] .check-icon.hidden::before {
     content: "\f070";
 }
+
+/* Horizontal scroll hints (see controllers/scroll-hints.js). The edges sit in a
+   zero-height sticky strip at the top of the scrolling list, so they stay at the
+   visible sides without being repositioned on every scroll event. */
+.better-columns-scroll-edges {
+    display: block;
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 5;
+    height: 0;
+    pointer-events: none;
+}
+
+.better-columns-scroll-edge {
+    position: absolute;
+    top: 0;
+    width: 48px;
+    height: var(--better-columns-scroll-edge-height, 0px);
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.better-columns-scroll-edge-start {
+    inset-inline-start: 0;
+    background:
+        linear-gradient(to right, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0) 12px),
+        linear-gradient(to right, var(--table-bg, #fff) 8%, transparent);
+}
+
+.better-columns-scroll-edge-end {
+    inset-inline-end: 0;
+    background:
+        linear-gradient(to left, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0) 12px),
+        linear-gradient(to left, var(--table-bg, #fff) 8%, transparent);
+}
+
+[dir="rtl"] .better-columns-scroll-edge-start {
+    background:
+        linear-gradient(to left, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0) 12px),
+        linear-gradient(to left, var(--table-bg, #fff) 8%, transparent);
+}
+
+[dir="rtl"] .better-columns-scroll-edge-end {
+    background:
+        linear-gradient(to right, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0) 12px),
+        linear-gradient(to right, var(--table-bg, #fff) 8%, transparent);
+}
+
+.better-columns-list.better-columns-can-scroll-start .better-columns-scroll-edge-start,
+.better-columns-list.better-columns-can-scroll-end .better-columns-scroll-edge-end {
+    opacity: 1;
+}
+
+/* The extension draws its own scrollbar, so the native one is hidden. */
+.better-columns-list.better-columns-has-scrollbar {
+    scrollbar-width: none;
+}
+
+.better-columns-list.better-columns-has-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.better-columns-scrollbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    height: 12px;
+    background-color: var(--table-bg, #fff);
+    border-top: 1px solid var(--default-border-color, #e0e2e3);
+}
+
+.better-columns-scrollbar[hidden] {
+    display: none;
+}
+
+.better-columns-scrollbar-thumb {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 4px;
+    background-color: var(--scroll-thumb-bg, #c7c7c7);
+    touch-action: none;
+    transition: background-color 100ms ease;
+}
+
+.better-columns-scrollbar:hover .better-columns-scrollbar-thumb,
+.better-columns-scrollbar.is-dragging .better-columns-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--scroll-thumb-bg, #c7c7c7) 80%, var(--text-color, #333));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .better-columns-scroll-edge,
+    .better-columns-scrollbar-thumb {
+        transition: none;
+    }
+}

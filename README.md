@@ -2,10 +2,10 @@
 
 Better Columns improves EspoCRM list views with column resizing, double-click
 auto-fit, one-click fit for all columns, column reordering, column pinning,
-column hiding, persistent personal layouts, and reset controls for column
-order, widths, pins and visibility.
+column hiding, visible horizontal scrolling, persistent personal layouts, and
+reset controls for column order, widths, pins and visibility.
 
-Current version: **1.4.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
+Current version: **1.5.0** · [Download the latest release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest)
 
 ![Better Columns demo: resize, fit, reorder, pin, hide and reset columns](docs/screenshots/smart-columns.gif)
 
@@ -19,6 +19,9 @@ Current version: **1.4.0** · [Download the latest release](https://github.com/A
 | Click Fit all columns in the Columns menu | Auto-fits every column to its rendered content |
 | Drag empty header space | Moves the header and all corresponding cells |
 | Click a header's options button (⋯) | Opens the column menu with Pin column or Unpin column, Hide column, and Filter column |
+| Look at the edge of a wide list | A fading edge shows that more columns are hidden on that side |
+| Drag the scrollbar at the bottom of the screen | Scrolls a wide list sideways without scrolling down to its end |
+| Turn the mouse wheel over that scrollbar | Scrolls the list sideways instead of the page |
 | Click a sortable header label | Keeps EspoCRM's native sorting |
 | Change visible columns | Keeps the native column menu open |
 | Reset order, widths, pins and visibility | Restores the administrator's order, default visibility and widths, and removes pins |
@@ -38,9 +41,8 @@ Current version: **1.4.0** · [Download the latest release](https://github.com/A
   enumerations and boolean fields.
 - Resizing one column does not redistribute the remaining space between the
   other columns.
-- When the total width exceeds the list container, EspoCRM's horizontal
-  scrolling remains available. The horizontal scrollbar appears only when
-  there is content to scroll.
+- When the total width exceeds the list container, the list scrolls
+  horizontally. See [See columns beyond the screen](#see-columns-beyond-the-screen).
 
 The native **Column Resize** toggle is hidden while Better Columns is
 active because resizing is always available directly from the headers.
@@ -73,6 +75,29 @@ double-click auto-fit, so each column becomes readable without resizing them
 one by one.
 
 ![Fit all columns from the Columns menu](docs/screenshots/fit-all-columns.gif)
+
+### See columns beyond the screen
+
+When the columns are wider than the list, Better Columns makes it obvious
+from anywhere in the list, without scrolling down to its end:
+
+- A fading edge with a soft shadow appears on each side where columns are
+  hidden. It covers the full height of the list, so it is visible from the
+  first rows, and disappears once that side is reached.
+- When columns are pinned, their existing shadow marks the start side and the
+  fading edge is shown only on the other side.
+- A horizontal scrollbar stays at the bottom of the screen while the list
+  continues below it. Once the end of the list is in view, the bar sits under
+  the table, where the native scrollbar used to be. Only one scrollbar is shown.
+- Drag the bar, click its track to move one page, or turn the mouse wheel over
+  it to scroll sideways. Touchpad and `Shift` + wheel scrolling keep working
+  everywhere in the list.
+- The bar is drawn by the extension, so it is always visible, including on
+  systems that hide scrollbars until you scroll (such as macOS).
+- Nothing is shown when every column fits. The same behavior applies to lists
+  in relationship panels and selection dialogs.
+
+![Fading edges and the scrollbar at the bottom of the screen on a wide list](docs/screenshots/scroll-hints.png)
 
 ### Reorder complete columns
 
@@ -263,7 +288,7 @@ read, update or delete CRM records through a custom API.
 
 ## Installation
 
-1. Download `better-columns-1.4.0.zip` from the
+1. Download `better-columns-1.5.0.zip` from the
   [latest GitHub release](https://github.com/AlexisSantin/espocrm-better-columns/releases/latest).
 2. In EspoCRM, open **Administration → Extensions**.
 3. Upload the ZIP file without extracting it.
@@ -292,7 +317,7 @@ they are harmless and are ignored when the extension is absent.
 - PHP `>= 8.3`
 - A modern desktop browser
 
-Version 1.4.0 has been developed and tested against EspoCRM 10.0.3.
+Version 1.5.0 has been developed and tested against EspoCRM 10.1.1.
 
 Resize handles are intentionally hidden on small mobile viewports, where
 horizontal touch scrolling has priority.
