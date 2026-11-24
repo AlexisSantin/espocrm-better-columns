@@ -479,8 +479,11 @@ from screenshots and logs.
 
 ## License
 
+Copyright (C) 2026 Alexis SANTIN.
+
 Better Columns is free software licensed under the
-[GNU General Public License v3.0 or later](LICENSE).
+[GNU Affero General Public License v3.0 or later](LICENSE), the same license as
+EspoCRM. Versions up to 1.5.0 were released under GPL-3.0-or-later.
 
 ## Author
 
