@@ -1,6 +1,6 @@
 {
     "name": "espocrm/ext-better-columns",
-    "license": "GPL-3.0-or-later",
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": ">=8.3"
     },
